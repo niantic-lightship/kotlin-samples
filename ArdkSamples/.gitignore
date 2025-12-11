@@ -1,0 +1,6 @@
+# Ignore generated files
+/build
+/local.properties
+/.gradle
+/.idea
+/.kotlin
