@@ -11,16 +11,16 @@ import androidx.compose.ui.Modifier
 import com.nianticspatial.ardk.externalsamples.common.PermissionsView
 
 class MainActivity : ComponentActivity() {
-  override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
 
-    enableEdgeToEdge()
-    setContent {
-      Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-        PermissionsView {
-          ARDKDemoView(modifier = Modifier.padding(innerPadding), this)
+        enableEdgeToEdge()
+        setContent {
+            Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                PermissionsView {
+                    ARDKDemoView(modifier = Modifier.padding(innerPadding), this)
+                }
+            }
         }
-      }
     }
-  }
 }

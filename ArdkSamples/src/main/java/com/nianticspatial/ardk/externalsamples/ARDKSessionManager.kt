@@ -13,76 +13,76 @@ import com.nianticlabs.ardk.FrameData
 import com.nianticlabs.ardk.InputDataFlags
 
 class ARDKSessionManager(
-  context: Context,
-  val session: ARDKSession,
-  val arManager: ARSessionManager
+    context: Context,
+    val session: ARDKSession,
+    val arManager: ARSessionManager
 ) : DefaultLifecycleObserver, OnFrameUpdateListener {
-  val sensorHelper: SensorHelper by lazy { SensorHelper(context) }
+    val sensorHelper: SensorHelper by lazy { SensorHelper(context) }
 
-  var currentFrame: Frame? = null
-    private set
+    var currentFrame: Frame? = null
+        private set
 
-  init {
-    arManager.setFrameUpdateListener(this)
-  }
-
-  private fun sendFrame(frame: Frame, requested: Int) {
-    val data = FrameData(frame.timestamp / 1_000_000, frame.timestamp)
-
-    if (InputDataFlags.GPS_LOCATION.Within(requested)) {
-      data.location = arManager.lastLocation
+    init {
+        arManager.setFrameUpdateListener(this)
     }
 
-    var image: Image? = null
-    if (InputDataFlags.CAMERA_IMAGE.Within(requested)) {
-      // Camera Image might not be ready yet, skip if so
-      try {
-        image = frame.acquireCameraImage()
-        data.cameraImagePlanes = image.planes
-        data.cameraImageWidth = image.width
-        data.cameraImageHeight = image.height
-        data.cameraImageFormat = image.format
-        data.cameraIntrinsics = CameraIntrinsicsFromARCore(frame.camera.imageIntrinsics)
-      } catch (ignored: NotYetAvailableException) {
-        // Continue execution if the camera image is not yet available
-      }
+    private fun sendFrame(frame: Frame, requested: Int) {
+        val data = FrameData(frame.timestamp / 1_000_000, frame.timestamp)
+
+        if (InputDataFlags.GPS_LOCATION.Within(requested)) {
+            data.location = arManager.lastLocation
+        }
+
+        var image: Image? = null
+        if (InputDataFlags.CAMERA_IMAGE.Within(requested)) {
+            // Camera Image might not be ready yet, skip if so
+            try {
+                image = frame.acquireCameraImage()
+                data.cameraImagePlanes = image.planes
+                data.cameraImageWidth = image.width
+                data.cameraImageHeight = image.height
+                data.cameraImageFormat = image.format
+                data.cameraIntrinsics = CameraIntrinsicsFromARCore(frame.camera.imageIntrinsics)
+            } catch (ignored: NotYetAvailableException) {
+                // Continue execution if the camera image is not yet available
+            }
+        }
+
+        if (InputDataFlags.POSE.Within(requested)) {
+            // Use camera pose provided by ARCore (OpenGL coordinate system)
+            data.cameraPose = frame.camera.pose
+        }
+
+        if (InputDataFlags.DEVICE_ORIENTATION.Within(requested)) {
+            data.screenOrientation = arManager.lastImageOrientation
+        }
+
+        if (InputDataFlags.TRACKING_STATE.Within(requested)) {
+            data.trackingState = frame.camera.trackingState
+        }
+
+        if (InputDataFlags.COMPASS.Within(requested)) {
+            data.compass = sensorHelper.compass()
+        }
+
+        session.sendFrame(data)
+        image?.close()
     }
 
-    if (InputDataFlags.POSE.Within(requested)) {
-      // Use camera pose provided by ARCore (OpenGL coordinate system)
-      data.cameraPose = frame.camera.pose
+    override fun onFrameUpdate(frame: Frame) {
+        currentFrame = frame
+        val requested = session.getRequestedDataFormats()
+
+        if (!InputDataFlags.NONE.Is(requested)) {
+            sendFrame(frame, requested)
+        }
     }
 
-    if (InputDataFlags.DEVICE_ORIENTATION.Within(requested)) {
-      data.screenOrientation = arManager.lastImageOrientation
+    override fun onResume(owner: LifecycleOwner) {
+        sensorHelper.resume()
     }
 
-    if (InputDataFlags.TRACKING_STATE.Within(requested)) {
-      data.trackingState = frame.camera.trackingState
+    override fun onPause(owner: LifecycleOwner) {
+        sensorHelper.pause()
     }
-
-    if (InputDataFlags.COMPASS.Within(requested)) {
-      data.compass = sensorHelper.compass()
-    }
-
-    session.sendFrame(data)
-    image?.close()
-  }
-
-  override fun onFrameUpdate(frame: Frame) {
-    currentFrame = frame
-    val requested = session.getRequestedDataFormats()
-
-    if (!InputDataFlags.NONE.Is(requested)) {
-      sendFrame(frame, requested)
-    }
-  }
-
-  override fun onResume(owner: LifecycleOwner) {
-    sensorHelper.resume()
-  }
-
-  override fun onPause(owner: LifecycleOwner) {
-    sensorHelper.pause()
-  }
 }

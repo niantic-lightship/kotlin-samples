@@ -34,7 +34,7 @@ fun PermissionsView(content: @Composable () -> Unit) {
             contract = ActivityResultContracts.RequestMultiplePermissions()
         ) { permissions ->
             permissionState.value = permissions[Manifest.permission.CAMERA] ?: false
-                    && permissions[Manifest.permission.ACCESS_FINE_LOCATION] ?: false
+                && permissions[Manifest.permission.ACCESS_FINE_LOCATION] ?: false
         }
 
     val permissionsToRequest = remember {

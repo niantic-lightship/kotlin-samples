@@ -42,93 +42,93 @@ typealias HelpContent = @Composable () -> Unit
  */
 @Composable
 fun BackHelpScaffold(
-  navController: NavController,
-  modifier: Modifier = Modifier,
-  content: @Composable BoxScope.(MutableState<HelpContent?>) -> Unit
+    navController: NavController,
+    modifier: Modifier = Modifier,
+    content: @Composable BoxScope.(MutableState<HelpContent?>) -> Unit
 ) {
-  // Tracks whether the contextual help overlay should be shown over the screen content.
-  var helpVisible by remember { mutableStateOf(false) }
-  // Holds the lazily supplied help composable; null means no help is available.
-  val helpContentState = remember { mutableStateOf<HelpContent?>(null) }
+    // Tracks whether the contextual help overlay should be shown over the screen content.
+    var helpVisible by remember { mutableStateOf(false) }
+    // Holds the lazily supplied help composable; null means no help is available.
+    val helpContentState = remember { mutableStateOf<HelpContent?>(null) }
 
-  Scaffold(
-    modifier = modifier.fillMaxSize(),
-    containerColor = Color.Transparent,
-    bottomBar = {
-      BottomAppBar(
+    Scaffold(
+        modifier = modifier.fillMaxSize(),
         containerColor = Color.Transparent,
-        modifier = Modifier
-          .height(56.dp)
-          .padding(horizontal = 8.dp),
-        tonalElevation = 0.dp,
-        windowInsets = WindowInsets(0, 0, 0, 0)
-      ) {
-        // Navigates back to the previous screen.
-        IconButton(
-          onClick = { navController.popBackStack() },
-          modifier = Modifier
-            .background(
-              color = Color.Black.copy(alpha = 0.6f),
-              shape = CircleShape
-            )
-        ) {
-          Icon(
-            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-            contentDescription = "Back",
-            tint = Color.White
-          )
-        }
-
-        Spacer(Modifier.weight(1f))
-
-        // Toggle the help overlay only if contextual help content has been provided.
-        IconButton(
-          onClick = { helpVisible = !helpVisible && helpContentState.value != null },
-          modifier = Modifier
-            .background(
-              color = Color.Black.copy(alpha = 0.6f),
-              shape = CircleShape
-            )
-        ) {
-          Icon(
-            imageVector = Icons.AutoMirrored.Filled.Help,
-            contentDescription = "Help",
-            tint = Color.White
-          )
-        }
-      }
-    }
-  ) { innerPadding ->
-    Box(
-      modifier = Modifier
-        .fillMaxSize()
-        .padding(innerPadding)
-    ) {
-      // Render the main screen content, allowing it to register contextual help UI.
-      content(helpContentState)
-
-      if (helpVisible) {
-        helpContentState.value?.let { help ->
-          Box(
-            modifier = Modifier
-              .padding(horizontal = 4.dp)
-              .fillMaxSize()
-              .background(
-                Color.Black.copy(alpha = 0.7f),
-                shape = RoundedCornerShape(16.dp)
-              )
-          ) {
-            Box(
-              modifier = Modifier
-                .align(Alignment.Center)
-                .padding(horizontal = 20.dp, vertical = 16.dp)
+        bottomBar = {
+            BottomAppBar(
+                containerColor = Color.Transparent,
+                modifier = Modifier
+                    .height(56.dp)
+                    .padding(horizontal = 8.dp),
+                tonalElevation = 0.dp,
+                windowInsets = WindowInsets(0, 0, 0, 0)
             ) {
-              // Invoke the help composable supplied by the screen content.
-              help()
+                // Navigates back to the previous screen.
+                IconButton(
+                    onClick = { navController.popBackStack() },
+                    modifier = Modifier
+                        .background(
+                            color = Color.Black.copy(alpha = 0.6f),
+                            shape = CircleShape
+                        )
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Back",
+                        tint = Color.White
+                    )
+                }
+
+                Spacer(Modifier.weight(1f))
+
+                // Toggle the help overlay only if contextual help content has been provided.
+                IconButton(
+                    onClick = { helpVisible = !helpVisible && helpContentState.value != null },
+                    modifier = Modifier
+                        .background(
+                            color = Color.Black.copy(alpha = 0.6f),
+                            shape = CircleShape
+                        )
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.Help,
+                        contentDescription = "Help",
+                        tint = Color.White
+                    )
+                }
             }
-          }
         }
-      }
+    ) { innerPadding ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+        ) {
+            // Render the main screen content, allowing it to register contextual help UI.
+            content(helpContentState)
+
+            if (helpVisible) {
+                helpContentState.value?.let { help ->
+                    Box(
+                        modifier = Modifier
+                            .padding(horizontal = 4.dp)
+                            .fillMaxSize()
+                            .background(
+                                Color.Black.copy(alpha = 0.7f),
+                                shape = RoundedCornerShape(16.dp)
+                            )
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .align(Alignment.Center)
+                                .padding(horizontal = 20.dp, vertical = 16.dp)
+                        ) {
+                            // Invoke the help composable supplied by the screen content.
+                            help()
+                        }
+                    }
+                }
+            }
+        }
     }
-  }
 }

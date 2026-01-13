@@ -1,6 +1,9 @@
+# Ignore generated AAR file - this should be built using prepare_android_studio_project.sh
+libs/generated/ardk.aar
+
 # Ignore generated files
 /build
 /local.properties
 /.gradle
-/.idea
 /.kotlin
+/.idea

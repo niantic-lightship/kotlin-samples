@@ -15,15 +15,15 @@ import androidx.compose.ui.unit.dp
  */
 @Composable
 fun ErrorDisplay(errorMessage: String?) {
-  errorMessage?.let { message ->
-    Text(
-      text = "Error: $message",
-      modifier = Modifier
-        .fillMaxWidth()
-        .background(Color.Red.copy(alpha = 0.1f))
-        .padding(8.dp),
-      color = Color.Red,
-      textAlign = TextAlign.Center
-    )
-  }
+    errorMessage?.let { message ->
+        Text(
+            text = "Error: $message",
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color.Red.copy(alpha = 0.1f))
+                .padding(8.dp),
+            color = Color.Red,
+            textAlign = TextAlign.Center
+        )
+    }
 }

@@ -11,7 +11,7 @@ root = true
 indent_style = space
 
 # Use two spaces for indentation
-indent_size = 2
+indent_size = 4
 tab_width = 2
 
 # Trim whitespace at the ends of lines
@@ -26,5 +26,6 @@ file_header_template = Copyright 2022-${CurrentDate.Year} Niantic.\n
 # Shell scripts
 [*.sh]
 end_of_line = lf
+
 [*.{cmd,bat}]
 end_of_line = crlf
